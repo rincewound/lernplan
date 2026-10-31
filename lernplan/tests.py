@@ -34,6 +34,68 @@ class LernplanModelTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Exam.objects.filter(owner=target_user, subject="Französisch").exists())
 
+    def test_exam_edit_form_prefills_exam_date(self):
+        exam = Exam.objects.create(
+            owner=self.user,
+            title="Klausur",
+            subject="Mathe",
+            exam_date=date(2026, 11, 12),
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(f"/exams/{exam.pk}/edit/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'value="2026-11-12"')
+
+    def test_exam_list_shows_future_exams_and_effort(self):
+        today = date.today()
+        Exam.objects.create(
+            owner=self.user,
+            title="Kommende Klausur",
+            subject="Mathe",
+            exam_date=today + timedelta(days=4),
+            days_before_exam=5,
+            duration_minutes=45,
+        )
+        Exam.objects.create(
+            owner=self.user,
+            title="Vergangene Klausur",
+            subject="Deutsch",
+            exam_date=today - timedelta(days=1),
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get("/exams/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Kommende Klausur")
+        self.assertContains(response, "5 Tage x 45 Minuten")
+        self.assertNotContains(response, "Vergangene Klausur")
+
+    def test_deleting_exam_removes_its_tasks(self):
+        exam = Exam.objects.create(
+            owner=self.user,
+            title="Klausur",
+            subject="Mathe",
+            exam_date=date.today() + timedelta(days=2),
+        )
+        task = LearningTask.objects.create(
+            owner=self.user,
+            subject=exam.subject,
+            title="Klausur preparation",
+            date=date.today() + timedelta(days=1),
+            source_kind="exam",
+            source_id=exam.pk,
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(f"/exams/{exam.pk}/delete/")
+
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Exam.objects.filter(pk=exam.pk).exists())
+        self.assertFalse(LearningTask.objects.filter(pk=task.pk).exists())
+
     def test_logout_uses_post_and_clears_session(self):
         self.client.force_login(self.user)
 
@@ -84,6 +146,7 @@ class LernplanModelTests(TestCase):
         tasks = LearningTask.objects.filter(owner=self.user, source_kind="study_plan")
         self.assertEqual(tasks.count(), 5)
         self.assertTrue(tasks.filter(date=date(2026, 1, 5)).exists())
+        self.assertEqual(tasks.first().title, "French")
 
     def test_plan_validity_dates_bound_generated_tasks(self):
         start_date = date(2026, 1, 5)
@@ -325,6 +388,7 @@ class LernplanModelTests(TestCase):
         self.client.force_login(admin)
 
         list_response = self.client.get("/vacations/")
+        edit_form_response = self.client.get(f"/vacations/{vacation.pk}/edit/")
         edit_response = self.client.post(
             f"/vacations/{vacation.pk}/edit/",
             {
@@ -340,6 +404,8 @@ class LernplanModelTests(TestCase):
 
         self.assertEqual(list_response.status_code, 200)
         self.assertContains(list_response, "Sommerferien")
+        self.assertContains(edit_form_response, 'value="2026-07-01"')
+        self.assertContains(edit_form_response, 'value="2026-07-14"')
         self.assertRedirects(edit_response, "/vacations/")
         self.assertEqual(vacation.name, "Lange Sommerferien")
         self.assertSetEqual(edited_users, {self.user.pk})

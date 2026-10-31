@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Prüfungen{% endblock %}
+
+{% block content %}
+  <section class="panel">
+    <h1>Prüfungen von {{ target_user.username }}</h1>
+    {% if visible_users.count > 1 %}
+      <form method="get">
+        {{ user_select_form.as_p }}
+        <button type="submit">Benutzer laden</button>
+      </form>
+    {% endif %}
+    <p><a href="{% url 'create_exam' %}">Neue Prüfung anlegen</a></p>
+    {% if exams %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Datum</th>
+            <th>Fach</th>
+            <th>Prüfung</th>
+            <th>Pensum</th>
+            <th>Aktionen</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for exam in exams %}
+            <tr>
+              <td>{{ exam.exam_date }}</td>
+              <td>{{ exam.subject }}</td>
+              <td>{{ exam.title }}</td>
+              <td>{{ exam.days_before_exam }} Tage x {{ exam.duration_minutes }} Minuten</td>
+              <td class="actions">
+                <a href="{% url 'edit_exam' exam.pk %}">Bearbeiten</a>
+                <a href="{% url 'delete_exam' exam.pk %}">Löschen</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>Es sind keine zukünftigen Prüfungen geplant.</p>
+    {% endif %}
+  </section>
+{% endblock %}

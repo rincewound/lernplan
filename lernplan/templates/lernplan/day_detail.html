@@ -39,8 +39,12 @@
         {% for task in tasks %}
           <li class="task-item {% if task.done %}done{% endif %}">
             <div>
-              <strong>{{ task.subject }}</strong><br />
-              {{ task.title }}
+              {% if task.source_kind == "study_plan" %}
+                <strong>{{ task.title }}</strong>
+              {% else %}
+                <strong>{{ task.subject }}</strong><br />
+                {{ task.title }}
+              {% endif %}
             </div>
             <div class="actions">
               <span class="badge plan">{{ task.minutes }} min</span>

@@ -230,6 +230,36 @@ def study_plans(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
+def exams(request: HttpRequest) -> HttpResponse:
+    target_user = request.user
+    user_id = request.GET.get("user")
+    if user_id:
+        selected = get_object_or_404(User, pk=user_id)
+        if not can_view_user(request.user, selected):
+            return redirect("exams")
+        target_user = selected
+
+    upcoming_exams = Exam.objects.filter(
+        owner=target_user,
+        exam_date__gte=date.today(),
+    )
+    visible_users = visible_users_for(request.user)
+    return render(
+        request,
+        "lernplan/exams.html",
+        {
+            "target_user": target_user,
+            "exams": upcoming_exams,
+            "visible_users": visible_users,
+            "user_select_form": UserSelectForm(
+                visible_users=visible_users,
+                initial={"user": target_user.pk},
+            ),
+        },
+    )
+
+
+@login_required
 def create_study_plan(request: HttpRequest) -> HttpResponse:
     visible_users = visible_users_for(request.user)
     if request.method == "POST":
@@ -295,10 +325,10 @@ def create_exam(request: HttpRequest) -> HttpResponse:
             messages.success(request, "Prüfung erstellt.")
             ensure_tasks_for_user(
                 exam.owner,
-                exam.exam_date - timedelta(days=exam.days_before_exam * 2),
-                exam.exam_date + timedelta(days=7),
+                exam.exam_date - timedelta(days=exam.days_before_exam),
+                exam.exam_date,
             )
-            return redirect("my")
+            return redirect("exams")
     else:
         form = ExamForm(user=request.user, visible_users=visible_users)
     return render(
@@ -324,18 +354,39 @@ def edit_exam(request: HttpRequest, pk: int) -> HttpResponse:
         if form.is_valid():
             form.save()
             messages.success(request, "Prüfung aktualisiert.")
+            LearningTask.objects.filter(
+                source_kind="exam",
+                source_id=exam.pk,
+                date__gte=date.today(),
+            ).delete()
             ensure_tasks_for_user(
                 exam.owner,
-                exam.exam_date - timedelta(days=exam.days_before_exam * 2),
-                exam.exam_date + timedelta(days=7),
+                exam.exam_date - timedelta(days=exam.days_before_exam),
+                exam.exam_date,
             )
-            return redirect("my")
+            return redirect("exams")
     else:
         form = ExamForm(instance=exam, user=request.user, visible_users=visible_users)
     return render(
         request,
         "lernplan/exam_form.html",
         {"form": form, "title": "Prüfung bearbeiten"},
+    )
+
+
+@login_required
+def delete_exam(request: HttpRequest, pk: int) -> HttpResponse:
+    exam = get_object_or_404(Exam, pk=pk)
+    if not can_view_user(request.user, exam.owner):
+        return redirect("exams")
+    if request.method == "POST":
+        exam.delete()
+        messages.success(request, "Prüfung und zugehörige Lerneinheiten gelöscht.")
+        return redirect("exams")
+    return render(
+        request,
+        "lernplan/exam_confirm_delete.html",
+        {"exam": exam},
     )
 
 

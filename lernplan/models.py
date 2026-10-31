@@ -4,6 +4,8 @@ from datetime import date, timedelta
 
 from django.contrib.auth import get_user_model
 from django.db import models, transaction
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 
 User = get_user_model()
 
@@ -168,6 +170,14 @@ class LearningTask(models.Model):
         return f"{self.subject} on {self.date}"
 
 
+@receiver(pre_delete, sender=Exam)
+def delete_exam_tasks(sender, instance, **kwargs):
+    LearningTask.objects.filter(
+        source_kind="exam",
+        source_id=instance.pk,
+    ).delete()
+
+
 def date_range(start: date, end: date):
     current = start
     while current <= end:
@@ -201,7 +211,7 @@ def _ensure_study_plan_tasks(plan: StudyPlan, start_date: date, end_date: date):
             source_id=plan.pk,
             defaults={
                 "subject": plan.subject,
-                "title": f"{plan.subject} study block",
+                "title": plan.subject,
                 "minutes": plan.duration_minutes,
             },
         )

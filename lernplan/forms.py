@@ -50,8 +50,8 @@ class StudyPlanForm(forms.ModelForm):
             "overrides_by_vacation": "Durch Ferien überschreiben",
         }
         widgets = {
-            "effective_from": forms.DateInput(attrs={"type": "date"}),
-            "effective_until": forms.DateInput(attrs={"type": "date"}),
+            "effective_from": forms.DateInput(format="%Y-%m-%d", attrs={"type": "date"}),
+            "effective_until": forms.DateInput(format="%Y-%m-%d", attrs={"type": "date"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -107,7 +107,7 @@ class ExamForm(forms.ModelForm):
             "content": "Inhalte / Freitext",
         }
         widgets = {
-            "exam_date": forms.DateInput(attrs={"type": "date"}),
+            "exam_date": forms.DateInput(format="%Y-%m-%d", attrs={"type": "date"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -146,8 +146,8 @@ class VacationForm(forms.ModelForm):
             "end_date": "Enddatum",
         }
         widgets = {
-            "start_date": forms.DateInput(attrs={"type": "date"}),
-            "end_date": forms.DateInput(attrs={"type": "date"}),
+            "start_date": forms.DateInput(format="%Y-%m-%d", attrs={"type": "date"}),
+            "end_date": forms.DateInput(format="%Y-%m-%d", attrs={"type": "date"}),
         }
 
     def __init__(self, *args, **kwargs):

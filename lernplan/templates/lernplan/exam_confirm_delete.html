@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Prüfung löschen{% endblock %}
+
+{% block content %}
+  <section class="panel">
+    <h1>Prüfung löschen</h1>
+    <p>
+      Soll die Prüfung „{{ exam.title }}“ in {{ exam.subject }} am {{ exam.exam_date }}
+      wirklich gelöscht werden? Zugehörige Lerneinheiten werden ebenfalls gelöscht.
+    </p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit">Löschen bestätigen</button>
+      <a href="{% url 'exams' %}">Abbrechen</a>
+    </form>
+  </section>
+{% endblock %}

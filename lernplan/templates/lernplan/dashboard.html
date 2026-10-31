@@ -22,8 +22,12 @@
           {% for task in open_tasks %}
             <li class="task-item">
               <div>
-                <strong>{{ task.subject }}</strong><br />
-                {{ task.title }}
+                {% if task.source_kind == "study_plan" %}
+                  <strong>{{ task.title }}</strong>
+                {% else %}
+                  <strong>{{ task.subject }}</strong><br />
+                  {{ task.title }}
+                {% endif %}
               </div>
               <div class="actions">
                 <span class="badge plan">{{ task.minutes }} min</span>
@@ -46,8 +50,12 @@
           {% for task in done_tasks %}
             <li class="task-item done">
               <div>
-                <strong>{{ task.subject }}</strong><br />
-                {{ task.title }}
+                {% if task.source_kind == "study_plan" %}
+                  <strong>{{ task.title }}</strong>
+                {% else %}
+                  <strong>{{ task.subject }}</strong><br />
+                  {{ task.title }}
+                {% endif %}
               </div>
               <div class="actions">
                 <span class="badge plan">{{ task.minutes }} min</span>
@@ -73,7 +81,7 @@
             <th>Datum</th>
             <th>Fach</th>
             <th>Prüfung</th>
-            <th>Minuten</th>
+            <th>Pensum</th>
           </tr>
         </thead>
         <tbody>
@@ -82,7 +90,7 @@
               <td>{{ exam.exam_date }}</td>
               <td>{{ exam.subject }}</td>
               <td>{{ exam.title }}</td>
-              <td>{{ exam.duration_minutes }}</td>
+              <td>{{ exam.days_before_exam }} Tage x {{ exam.duration_minutes }} Minuten</td>
             </tr>
           {% endfor %}
         </tbody>
