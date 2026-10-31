@@ -33,6 +33,14 @@ class LernplanModelTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Exam.objects.filter(owner=target_user, subject="Französisch").exists())
 
+    def test_logout_uses_post_and_clears_session(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post("/logout/")
+
+        self.assertRedirects(response, "/login/")
+        self.assertNotIn("_auth_user_id", self.client.session)
+
     def test_daily_plan_generates_weekday_tasks(self):
         start_date = date(2026, 1, 5)
         end_date = date(2026, 1, 11)
