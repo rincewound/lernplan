@@ -17,7 +17,10 @@
           <a href="{% url 'create_study_plan' %}">Neuer Lernplan</a>
           <a href="{% url 'create_exam' %}">Neue Prüfung</a>
           <a href="{% url 'create_vacation' %}">Neue Ferien</a>
-          <a href="{% url 'logout' %}">Abmelden</a>
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="nav-logout">Abmelden</button>
+          </form>
         {% else %}
           <a href="{% url 'login' %}">Anmelden</a>
         {% endif %}
