@@ -312,6 +312,70 @@ class LernplanModelTests(TestCase):
             {self.user.pk, second_user.pk},
         )
 
+    def test_vacation_crud_allows_admin_to_list_edit_and_delete(self):
+        second_user = User.objects.create_user(username="bob")
+        admin = User.objects.create_user(username="admin", is_superuser=True, is_staff=True)
+        vacation = Vacation.objects.create(
+            name="Sommerferien",
+            start_date=date(2026, 7, 1),
+            end_date=date(2026, 7, 14),
+            created_by=admin,
+        )
+        vacation.users.add(self.user, second_user)
+        self.client.force_login(admin)
+
+        list_response = self.client.get("/vacations/")
+        edit_response = self.client.post(
+            f"/vacations/{vacation.pk}/edit/",
+            {
+                "name": "Lange Sommerferien",
+                "start_date": "2026-07-01",
+                "end_date": "2026-07-20",
+                "users": [self.user.pk],
+            },
+        )
+        vacation.refresh_from_db()
+        edited_users = set(vacation.users.values_list("pk", flat=True))
+        delete_response = self.client.post(f"/vacations/{vacation.pk}/delete/")
+
+        self.assertEqual(list_response.status_code, 200)
+        self.assertContains(list_response, "Sommerferien")
+        self.assertRedirects(edit_response, "/vacations/")
+        self.assertEqual(vacation.name, "Lange Sommerferien")
+        self.assertSetEqual(edited_users, {self.user.pk})
+        self.assertRedirects(delete_response, "/vacations/")
+        self.assertFalse(Vacation.objects.filter(pk=vacation.pk).exists())
+
+    def test_regular_user_can_manage_only_their_own_vacation(self):
+        own_vacation = Vacation.objects.create(
+            name="Eigene Ferien",
+            start_date=date(2026, 8, 1),
+            end_date=date(2026, 8, 10),
+            created_by=self.user,
+        )
+        own_vacation.users.add(self.user)
+        shared_vacation = Vacation.objects.create(
+            name="Gemeinsame Ferien",
+            start_date=date(2026, 9, 1),
+            end_date=date(2026, 9, 10),
+        )
+        shared_vacation.users.add(self.user, User.objects.create_user(username="bob"))
+        self.client.force_login(self.user)
+
+        list_response = self.client.get("/vacations/")
+        own_edit_response = self.client.get(f"/vacations/{own_vacation.pk}/edit/")
+        shared_edit_response = self.client.get(f"/vacations/{shared_vacation.pk}/edit/")
+        shared_delete_response = self.client.post(
+            f"/vacations/{shared_vacation.pk}/delete/"
+        )
+
+        self.assertContains(list_response, "Eigene Ferien")
+        self.assertContains(list_response, "Gemeinsame Ferien")
+        self.assertEqual(own_edit_response.status_code, 200)
+        self.assertRedirects(shared_edit_response, "/vacations/")
+        self.assertRedirects(shared_delete_response, "/vacations/")
+        self.assertTrue(Vacation.objects.filter(pk=shared_vacation.pk).exists())
+
     def test_regular_user_cannot_assign_vacation_to_another_user(self):
         second_user = User.objects.create_user(username="bob")
         self.client.force_login(self.user)

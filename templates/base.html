@@ -17,6 +17,7 @@
           <a href="{% url 'study_plans' %}">Lerneinheiten</a>
           <a href="{% url 'create_study_plan' %}">Neuer Lernplan</a>
           <a href="{% url 'create_exam' %}">Neue Prüfung</a>
+          <a href="{% url 'vacations' %}">Ferien verwalten</a>
           <a href="{% url 'create_vacation' %}">Neue Ferien</a>
           <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}

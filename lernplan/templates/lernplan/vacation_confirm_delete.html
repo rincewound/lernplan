@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Ferien löschen{% endblock %}
+
+{% block content %}
+  <section class="panel">
+    <h1>Ferien löschen</h1>
+    <p>
+      Sollen die Ferien „{{ vacation.name }}“ vom {{ vacation.start_date }}
+      bis {{ vacation.end_date }} wirklich gelöscht werden?
+    </p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit">Löschen bestätigen</button>
+      <a href="{% url 'vacations' %}">Abbrechen</a>
+    </form>
+  </section>
+{% endblock %}

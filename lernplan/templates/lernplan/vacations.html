@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Ferien verwalten{% endblock %}
+
+{% block content %}
+  <section class="panel">
+    <h1>Ferien verwalten</h1>
+    <p><a href="{% url 'create_vacation' %}">Neue Ferien anlegen</a></p>
+    {% if vacations %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Von</th>
+            <th>Bis</th>
+            <th>Gilt für</th>
+            <th>Aktionen</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for vacation in vacations %}
+            <tr>
+              <td>{{ vacation.name }}</td>
+              <td>{{ vacation.start_date }}</td>
+              <td>{{ vacation.end_date }}</td>
+              <td>{{ vacation.users.all|join:", " }}</td>
+              <td class="actions">
+                {% if vacation.can_manage %}
+                  <a href="{% url 'edit_vacation' vacation.pk %}">Bearbeiten</a>
+                  <a href="{% url 'delete_vacation' vacation.pk %}">Löschen</a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>Es sind keine Ferien angelegt oder zugewiesen.</p>
+    {% endif %}
+  </section>
+{% endblock %}

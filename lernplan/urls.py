@@ -20,6 +20,9 @@ urlpatterns = [
     path("plans/<int:pk>/delete/", views.delete_study_plan, name="delete_study_plan"),
     path("exams/new/", views.create_exam, name="create_exam"),
     path("exams/<int:pk>/edit/", views.edit_exam, name="edit_exam"),
+    path("vacations/", views.vacations, name="vacations"),
     path("vacations/new/", views.create_vacation, name="create_vacation"),
+    path("vacations/<int:pk>/edit/", views.edit_vacation, name="edit_vacation"),
+    path("vacations/<int:pk>/delete/", views.delete_vacation, name="delete_vacation"),
     path("tasks/<int:pk>/toggle/", views.toggle_task, name="toggle_task"),
 ]

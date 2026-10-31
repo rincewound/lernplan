@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
+from django.db.models import Q
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -33,6 +34,16 @@ def can_view_user(actor: User, target: User) -> bool:
     if actor == target or actor.is_superuser:
         return True
     return actor.groups.filter(name__in=["admin", "supervisor"]).exists()
+
+
+def can_manage_vacation(actor: User, vacation: Vacation) -> bool:
+    if actor.is_superuser or actor.groups.filter(name__in=["admin", "supervisor"]).exists():
+        return True
+    return (
+        vacation.created_by_id == actor.pk
+        and vacation.users.count() == 1
+        and vacation.users.filter(pk=actor.pk).exists()
+    )
 
 
 @login_required
@@ -329,6 +340,31 @@ def edit_exam(request: HttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
+def vacations(request: HttpRequest) -> HttpResponse:
+    visible_users = visible_users_for(request.user)
+    can_manage_all = request.user.is_superuser or request.user.groups.filter(
+        name__in=["admin", "supervisor"]
+    ).exists()
+    if can_manage_all:
+        vacation_list = Vacation.objects.all()
+    else:
+        vacation_list = Vacation.objects.filter(
+            Q(created_by=request.user) | Q(users=request.user)
+        ).distinct()
+    vacation_list = list(vacation_list.prefetch_related("users"))
+    for vacation in vacation_list:
+        vacation.can_manage = can_manage_vacation(request.user, vacation)
+    return render(
+        request,
+        "lernplan/vacations.html",
+        {
+            "vacations": vacation_list,
+            "visible_users": visible_users,
+        },
+    )
+
+
+@login_required
 def create_vacation(request: HttpRequest) -> HttpResponse:
     visible_users = visible_users_for(request.user)
     if request.method == "POST":
@@ -347,6 +383,56 @@ def create_vacation(request: HttpRequest) -> HttpResponse:
         request,
         "lernplan/vacation_form.html",
         {"form": form, "title": "Neue Ferien"},
+    )
+
+
+@login_required
+def edit_vacation(request: HttpRequest, pk: int) -> HttpResponse:
+    vacation = get_object_or_404(Vacation, pk=pk)
+    if not can_manage_vacation(request.user, vacation):
+        return redirect("vacations")
+    visible_users = visible_users_for(request.user)
+    if request.method == "POST":
+        form = VacationForm(
+            request.POST,
+            instance=vacation,
+            user=request.user,
+            visible_users=visible_users,
+        )
+        if form.is_valid():
+            saved_vacation = form.save()
+            if not (request.user.is_superuser or request.user.groups.filter(
+                name__in=["admin", "supervisor"]
+            ).exists()):
+                saved_vacation.users.set([request.user])
+            messages.success(request, "Ferien aktualisiert.")
+            return redirect("vacations")
+    else:
+        form = VacationForm(
+            instance=vacation,
+            user=request.user,
+            visible_users=visible_users,
+        )
+    return render(
+        request,
+        "lernplan/vacation_form.html",
+        {"form": form, "title": "Ferien bearbeiten"},
+    )
+
+
+@login_required
+def delete_vacation(request: HttpRequest, pk: int) -> HttpResponse:
+    vacation = get_object_or_404(Vacation, pk=pk)
+    if not can_manage_vacation(request.user, vacation):
+        return redirect("vacations")
+    if request.method == "POST":
+        vacation.delete()
+        messages.success(request, "Ferien gelöscht.")
+        return redirect("vacations")
+    return render(
+        request,
+        "lernplan/vacation_confirm_delete.html",
+        {"vacation": vacation},
     )
 
 
