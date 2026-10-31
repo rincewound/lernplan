@@ -170,6 +170,25 @@ class LearningTask(models.Model):
         return f"{self.subject} on {self.date}"
 
 
+class UserPreference(models.Model):
+    THEME_CHOICES = [
+        ("standard", "Standard"),
+        ("space", "Space"),
+        ("unicorn", "Einhorn"),
+        ("forest", "Wald"),
+    ]
+
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="preferences",
+    )
+    theme = models.CharField(max_length=20, choices=THEME_CHOICES, default="standard")
+
+    def __str__(self) -> str:
+        return f"{self.user}: {self.get_theme_display()}"
+
+
 @receiver(pre_delete, sender=Exam)
 def delete_exam_tasks(sender, instance, **kwargs):
     LearningTask.objects.filter(

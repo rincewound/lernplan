@@ -10,9 +10,17 @@ from django.contrib.auth.models import Group
 from django.db.models import Q
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.http import url_has_allowed_host_and_scheme
 
-from .forms import ExamForm, StudyPlanForm, UserSelectForm, VacationForm
-from .models import Exam, LearningTask, StudyPlan, Vacation, ensure_tasks_for_user
+from .forms import ExamForm, StudyPlanForm, ThemeForm, UserSelectForm, VacationForm
+from .models import (
+    Exam,
+    LearningTask,
+    StudyPlan,
+    UserPreference,
+    Vacation,
+    ensure_tasks_for_user,
+)
 
 User = get_user_model()
 
@@ -48,6 +56,31 @@ def can_manage_vacation(actor: User, vacation: Vacation) -> bool:
 
 @login_required
 def home(request: HttpRequest) -> HttpResponse:
+    return redirect("my")
+
+
+@login_required
+def set_theme(request: HttpRequest) -> HttpResponse:
+    if request.method != "POST":
+        return HttpResponseBadRequest("Ungültige Anfrage.")
+
+    form = ThemeForm(request.POST)
+    if form.is_valid():
+        UserPreference.objects.update_or_create(
+            user=request.user,
+            defaults={"theme": form.cleaned_data["theme"]},
+        )
+        messages.success(request, "Theme gespeichert.")
+    else:
+        messages.error(request, "Bitte wähle ein gültiges Theme.")
+
+    next_url = request.POST.get("next", "")
+    if url_has_allowed_host_and_scheme(
+        next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        return redirect(next_url)
     return redirect("my")
 
 

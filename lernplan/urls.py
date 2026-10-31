@@ -11,6 +11,7 @@ urlpatterns = [
         name="login",
     ),
     path("logout/", auth_views.LogoutView.as_view(next_page="login"), name="logout"),
+    path("theme/", views.set_theme, name="set_theme"),
     path("my/", views.dashboard, name="my"),
     path("calendar/", views.calendar_view, name="calendar"),
     path("day/<str:target_date>/", views.day_detail, name="day_detail"),

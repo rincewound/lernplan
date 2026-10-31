@@ -31,9 +31,7 @@
               </div>
               <div class="actions">
                 <span class="badge plan">{{ task.minutes }} min</span>
-                <a href="{% url 'toggle_task' task.pk %}">
-                  <button type="button">Erledigt</button>
-                </a>
+                <a href="{% url 'toggle_task' task.pk %}">Erledigt</a>
               </div>
             </li>
           {% endfor %}
@@ -59,9 +57,7 @@
               </div>
               <div class="actions">
                 <span class="badge plan">{{ task.minutes }} min</span>
-                <a href="{% url 'toggle_task' task.pk %}">
-                  <button type="button" class="secondary">Zurücksetzen</button>
-                </a>
+                <a href="{% url 'toggle_task' task.pk %}">Zurücksetzen</a>
               </div>
             </li>
           {% endfor %}

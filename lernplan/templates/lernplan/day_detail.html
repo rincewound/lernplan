@@ -24,7 +24,7 @@
             </div>
             <div class="actions">
               <span class="badge exam">{{ exam.duration_minutes }} min</span>
-              <a href="{% url 'edit_exam' exam.pk %}"><button type="button" class="secondary">Bearbeiten</button></a>
+              <a href="{% url 'edit_exam' exam.pk %}">Bearbeiten</a>
             </div>
           </li>
         {% endfor %}
@@ -48,7 +48,7 @@
             </div>
             <div class="actions">
               <span class="badge plan">{{ task.minutes }} min</span>
-              <a href="{% url 'toggle_task' task.pk %}"><button type="button" class="secondary">{% if task.done %}Zurücksetzen{% else %}Erledigt{% endif %}</button></a>
+              <a href="{% url 'toggle_task' task.pk %}">{% if task.done %}Zurücksetzen{% else %}Erledigt{% endif %}</a>
             </div>
           </li>
         {% endfor %}

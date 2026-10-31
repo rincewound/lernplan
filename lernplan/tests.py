@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import TestCase
 
-from .models import Exam, LearningTask, StudyPlan, Vacation, ensure_tasks_for_user
+from .models import Exam, LearningTask, StudyPlan, UserPreference, Vacation, ensure_tasks_for_user
 
 User = get_user_model()
 
@@ -103,6 +103,40 @@ class LernplanModelTests(TestCase):
 
         self.assertRedirects(response, "/login/")
         self.assertNotIn("_auth_user_id", self.client.session)
+
+    def test_user_can_choose_and_persist_theme(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            "/theme/",
+            {"theme": "space", "next": "/calendar/"},
+        )
+
+        self.assertRedirects(response, "/calendar/")
+        self.assertEqual(UserPreference.objects.get(user=self.user).theme, "space")
+        themed_page = self.client.get("/calendar/")
+        self.assertContains(themed_page, '<body data-theme="space">')
+        self.assertContains(themed_page, 'class="nav-link"')
+
+    def test_theme_selection_rejects_invalid_values_and_external_redirects(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            "/theme/",
+            {"theme": "unknown", "next": "https://example.com/"},
+        )
+
+        self.assertRedirects(response, "/my/")
+        self.assertFalse(UserPreference.objects.filter(user=self.user).exists())
+
+    def test_themes_are_isolated_per_user(self):
+        second_user = User.objects.create_user(username="bob")
+        UserPreference.objects.create(user=self.user, theme="forest")
+        self.client.force_login(second_user)
+
+        response = self.client.get("/my/")
+
+        self.assertContains(response, '<body data-theme="standard">')
 
     def test_seed_demo_data_preserves_existing_vacation_assignments(self):
         learner = User.objects.create_user(username="learner")

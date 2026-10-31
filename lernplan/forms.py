@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 
-from .models import Exam, StudyPlan, Vacation
+from .models import Exam, StudyPlan, UserPreference, Vacation
 
 User = get_user_model()
 
@@ -189,3 +189,10 @@ class UserSelectForm(forms.Form):
         self.fields["user"].queryset = User.objects.filter(
             pk__in=[user.pk for user in visible_users]
         ).order_by("username")
+
+
+class ThemeForm(forms.Form):
+    theme = forms.ChoiceField(
+        choices=UserPreference.THEME_CHOICES,
+        label="Farbschema",
+    )

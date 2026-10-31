@@ -7,22 +7,35 @@
     <title>{% block title %}Lernplan{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
   </head>
-  <body>
+  <body data-theme="{{ current_theme }}">
     <header class="topbar">
       <div class="brand">Lernplan</div>
       <nav class="nav">
         {% if user.is_authenticated %}
-          <a href="{% url 'my' %}">Mein Bereich</a>
-          <a href="{% url 'calendar' %}">Kalender</a>
-          <a href="{% url 'study_plans' %}">Lerneinheiten</a>
-          <a href="{% url 'exams' %}">Prüfungen</a>
-          <a href="{% url 'vacations' %}">Ferien verwalten</a>
+          <a class="nav-link" href="{% url 'my' %}">Mein Bereich</a>
+          <a class="nav-link" href="{% url 'calendar' %}">Kalender</a>
+          <a class="nav-link" href="{% url 'study_plans' %}">Lerneinheiten</a>
+          <a class="nav-link" href="{% url 'exams' %}">Prüfungen</a>
+          <a class="nav-link" href="{% url 'vacations' %}">Ferien verwalten</a>
+          <form method="post" action="{% url 'set_theme' %}" class="theme-form">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+            <label for="theme-choice">Theme</label>
+            <select id="theme-choice" name="theme">
+              {% for value, label in theme_choices %}
+                <option value="{{ value }}" {% if current_theme == value %}selected{% endif %}>
+                  {{ label }}
+                </option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="theme-submit">Speichern</button>
+          </form>
           <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}
             <button type="submit" class="nav-logout">Abmelden</button>
           </form>
         {% else %}
-          <a href="{% url 'login' %}">Anmelden</a>
+          <a class="nav-link" href="{% url 'login' %}">Anmelden</a>
         {% endif %}
       </nav>
     </header>
