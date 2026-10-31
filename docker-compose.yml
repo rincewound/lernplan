@@ -5,12 +5,11 @@ services:
     build:
       context: .
     container_name: lernplan-web
+    working_dir: /app
     ports:
       - "8081:8000"
     environment:
       DJANGO_SETTINGS_MODULE: learning_plan.settings
-    volumes:
-      - .:/app
     command: >
       sh -c "python manage.py migrate --noinput &&
       python manage.py seed_demo_data &&
