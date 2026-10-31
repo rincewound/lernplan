@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import calendar
 from datetime import date, timedelta
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import ExamForm, StudyPlanForm, UserSelectForm, VacationForm
@@ -65,7 +66,8 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     upcoming_exams = Exam.objects.filter(
         owner=target_user,
         exam_date__gte=today,
-    ).order_by("exam_date")[:10]
+        exam_date__lte=today + timedelta(days=21),
+    ).order_by("exam_date")
 
     visible_users = visible_users_for(request.user)
     form = UserSelectForm(visible_users=visible_users, initial={"user": target_user.pk})
@@ -94,15 +96,33 @@ def calendar_view(request: HttpRequest) -> HttpResponse:
             return redirect("calendar")
         target_user = selected
 
-    start = date.today() - timedelta(days=15)
-    end = date.today() + timedelta(days=45)
+    today = date.today()
+    month_value = request.GET.get("month")
+    try:
+        month_start = (
+            date.fromisoformat(f"{month_value}-01") if month_value else today.replace(day=1)
+        )
+    except ValueError:
+        return HttpResponseBadRequest("Ungültiger Monat.")
+    if month_start.day != 1:
+        return HttpResponseBadRequest("Ungültiger Monat.")
+    month_end = date(
+        month_start.year,
+        month_start.month,
+        calendar.monthrange(month_start.year, month_start.month)[1],
+    )
+    previous_month = (month_start - timedelta(days=1)).replace(day=1)
+    next_month = (month_end + timedelta(days=1)).replace(day=1)
+    start = month_start
+    end = month_end
+    ensure_tasks_for_user(target_user, start, end)
 
     days = []
     for current in range((end - start).days + 1):
         current_day = start + timedelta(days=current)
         exams = Exam.objects.filter(owner=target_user, exam_date=current_day)
         vacations = Vacation.objects.filter(
-            owner=target_user,
+            users=target_user,
             start_date__lte=current_day,
             end_date__gte=current_day,
         )
@@ -113,6 +133,8 @@ def calendar_view(request: HttpRequest) -> HttpResponse:
                 "exams": exams,
                 "vacations": vacations,
                 "tasks": tasks,
+                "task_count": tasks.count(),
+                "done_task_count": tasks.filter(done=True).count(),
             }
         )
 
@@ -124,6 +146,14 @@ def calendar_view(request: HttpRequest) -> HttpResponse:
             "days": days,
             "start": start,
             "end": end,
+            "month": month_start,
+            "previous_month": previous_month,
+            "next_month": next_month,
+            "selected_user": target_user,
+            "user_select_form": UserSelectForm(
+                visible_users=visible_users_for(request.user),
+                initial={"user": target_user.pk},
+            ),
             "visible_users": visible_users_for(request.user),
         },
     )
@@ -144,7 +174,7 @@ def day_detail(request: HttpRequest, target_date: str) -> HttpResponse:
     tasks = LearningTask.objects.filter(owner=target_user, date=selected_date)
     exams = Exam.objects.filter(owner=target_user, exam_date=selected_date)
     vacations = Vacation.objects.filter(
-        owner=target_user,
+        users=target_user,
         start_date__lte=selected_date,
         end_date__gte=selected_date,
     )
@@ -159,6 +189,31 @@ def day_detail(request: HttpRequest, target_date: str) -> HttpResponse:
             "exams": exams,
             "vacations": vacations,
             "visible_users": visible_users_for(request.user),
+        },
+    )
+
+
+@login_required
+def study_plans(request: HttpRequest) -> HttpResponse:
+    target_user = request.user
+    user_id = request.GET.get("user")
+    if user_id:
+        selected = get_object_or_404(User, pk=user_id)
+        if not can_view_user(request.user, selected):
+            return redirect("study_plans")
+        target_user = selected
+    plans = StudyPlan.objects.filter(owner=target_user)
+    return render(
+        request,
+        "lernplan/study_plans.html",
+        {
+            "target_user": target_user,
+            "plans": plans,
+            "visible_users": visible_users_for(request.user),
+            "user_select_form": UserSelectForm(
+                visible_users=visible_users_for(request.user),
+                initial={"user": target_user.pk},
+            ),
         },
     )
 
@@ -205,6 +260,18 @@ def edit_study_plan(request: HttpRequest, pk: int) -> HttpResponse:
         "lernplan/study_plan_form.html",
         {"form": form, "title": "Lernplan bearbeiten"},
     )
+
+
+@login_required
+def delete_study_plan(request: HttpRequest, pk: int) -> HttpResponse:
+    plan = get_object_or_404(StudyPlan, pk=pk)
+    if not can_view_user(request.user, plan.owner):
+        return redirect("study_plans")
+    if request.method == "POST":
+        plan.delete()
+        messages.success(request, "Lernplan gelöscht. Vergangene Lerneinheiten bleiben erhalten.")
+        return redirect("study_plans")
+    return render(request, "lernplan/study_plan_confirm_delete.html", {"plan": plan})
 
 
 @login_required
@@ -267,7 +334,11 @@ def create_vacation(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         form = VacationForm(request.POST, user=request.user, visible_users=visible_users)
         if form.is_valid():
-            form.save()
+            vacation = form.save()
+            if not (request.user.is_superuser or request.user.groups.filter(
+                name__in=["admin", "supervisor"]
+            ).exists()):
+                vacation.users.set([request.user])
             messages.success(request, "Ferien erstellt.")
             return redirect("calendar")
     else:

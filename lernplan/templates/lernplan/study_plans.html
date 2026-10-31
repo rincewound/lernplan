@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Lerneinheiten{% endblock %}
+
+{% block content %}
+  <section class="panel">
+    <h1>Lerneinheiten von {{ target_user.username }}</h1>
+    {% if visible_users.count > 1 %}
+      <form method="get">
+        {{ user_select_form.as_p }}
+        <button type="submit">Benutzer laden</button>
+      </form>
+    {% endif %}
+    <p><a href="{% url 'create_study_plan' %}">Neue Lerneinheit erstellen</a></p>
+    {% if plans %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Fach</th>
+            <th>Dauer</th>
+            <th>Wochentage</th>
+            <th>Gültigkeit</th>
+            <th>Status</th>
+            <th>Aktionen</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for plan in plans %}
+            <tr>
+              <td>{{ plan.subject }}</td>
+              <td>{{ plan.duration_minutes }} min</td>
+              <td>{{ plan.weekday_names|join:", " }}</td>
+              <td>{{ plan.effective_from }} – {% if plan.effective_until %}{{ plan.effective_until }}{% else %}unbegrenzt{% endif %}</td>
+              <td>{% if plan.active %}Aktiv{% else %}Inaktiv{% endif %}</td>
+              <td class="actions">
+                <a href="{% url 'edit_study_plan' plan.pk %}">Bearbeiten</a>
+                <a href="{% url 'delete_study_plan' plan.pk %}">Löschen</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>Es sind keine Lerneinheiten angelegt.</p>
+    {% endif %}
+  </section>
+{% endblock %}

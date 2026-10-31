@@ -32,7 +32,7 @@ class Command(BaseCommand):
             user.save()
         user.groups.add(user_group)
 
-        StudyPlan.objects.update_or_create(
+        StudyPlan.objects.get_or_create(
             owner=user,
             subject="French",
             defaults={
@@ -43,16 +43,18 @@ class Command(BaseCommand):
             },
         )
 
-        Vacation.objects.update_or_create(
-            owner=user,
+        vacation, created = Vacation.objects.get_or_create(
             name="School holidays",
             defaults={
                 "start_date": date.today() + timedelta(days=10),
                 "end_date": date.today() + timedelta(days=18),
+                "created_by": admin_user,
             },
         )
+        if created:
+            vacation.users.add(user)
 
-        Exam.objects.update_or_create(
+        Exam.objects.get_or_create(
             owner=user,
             title="Speaking exam",
             subject="French",

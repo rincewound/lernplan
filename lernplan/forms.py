@@ -36,14 +36,22 @@ class StudyPlanForm(forms.ModelForm):
             "subject",
             "duration_minutes",
             "weekdays",
+            "effective_from",
+            "effective_until",
             "active",
             "overrides_by_vacation",
         ]
         labels = {
             "subject": "Fach",
             "duration_minutes": "Lernzeit in Minuten",
+            "effective_from": "Gültig ab",
+            "effective_until": "Gültig bis (optional)",
             "active": "Aktiv",
             "overrides_by_vacation": "Durch Ferien überschreiben",
+        }
+        widgets = {
+            "effective_from": forms.DateInput(attrs={"type": "date"}),
+            "effective_until": forms.DateInput(attrs={"type": "date"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -123,15 +131,15 @@ class ExamForm(forms.ModelForm):
 
 
 class VacationForm(forms.ModelForm):
-    owner = forms.ModelChoiceField(
+    users = forms.ModelMultipleChoiceField(
         queryset=User.objects.none(),
-        required=False,
-        label="Besitzer",
+        widget=forms.CheckboxSelectMultiple,
+        label="Gilt für Benutzer",
     )
 
     class Meta:
         model = Vacation
-        fields = ["owner", "name", "start_date", "end_date"]
+        fields = ["name", "start_date", "end_date", "users"]
         labels = {
             "name": "Name",
             "start_date": "Startdatum",
@@ -146,13 +154,13 @@ class VacationForm(forms.ModelForm):
         self.user = kwargs.pop("user", None)
         visible_users = kwargs.pop("visible_users", [])
         super().__init__(*args, **kwargs)
-        self.fields["owner"].queryset = User.objects.filter(
-            pk__in=[user.pk for user in visible_users or [self.user]]
+        users = visible_users or ([self.user] if self.user else [])
+        user_ids = [user.pk for user in users]
+        self.fields["users"].queryset = User.objects.filter(
+            pk__in=user_ids
         ).order_by("username")
-        if self.instance.pk:
-            self.fields["owner"].initial = self.instance.owner
-        elif self.user:
-            self.fields["owner"].initial = self.user
+        if not self.instance.pk and len(user_ids) == 1:
+            self.fields["users"].initial = user_ids
 
     def clean(self):
         cleaned_data = super().clean()
@@ -164,9 +172,11 @@ class VacationForm(forms.ModelForm):
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        instance.owner = self.cleaned_data.get("owner") or self.user or instance.owner
+        if not instance.pk:
+            instance.created_by = self.user
         if commit:
             instance.save()
+            self.save_m2m()
         return instance
 
 

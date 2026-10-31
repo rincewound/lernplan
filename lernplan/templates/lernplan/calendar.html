@@ -5,10 +5,26 @@
 {% block content %}
   <section class="panel">
     <h1>Kalender</h1>
+    {% if visible_users.count > 1 %}
+      <form method="get" class="calendar-user-select">
+        <input type="hidden" name="month" value="{{ month|date:'Y-m' }}" />
+        {{ user_select_form.as_p }}
+        <button type="submit">Benutzer laden</button>
+      </form>
+    {% endif %}
+    <div class="calendar-navigation">
+      <a href="?month={{ previous_month|date:'Y-m' }}{% if selected_user.pk != user.pk %}&amp;user={{ selected_user.pk }}{% endif %}">← Vorheriger Monat</a>
+      <strong>{{ month|date:'F Y' }}</strong>
+      <a href="?month={{ next_month|date:'Y-m' }}{% if selected_user.pk != user.pk %}&amp;user={{ selected_user.pk }}{% endif %}">Nächster Monat →</a>
+    </div>
     <div class="grid">
       {% for day in days %}
         <div class="day-card {% if day.vacations %}holiday{% endif %} {% if day.exams %}exam-day{% endif %}">
-          <h3><a href="{% url 'day_detail' day.date.isoformat %}">{{ day.date|date:'D, d. M Y' }}</a></h3>
+          <h3>
+            <a href="{% url 'day_detail' day.date.isoformat %}{% if selected_user.pk != user.pk %}?user={{ selected_user.pk }}{% endif %}">
+              {{ day.date|date:'D, d. M Y' }}
+            </a>
+          </h3>
           {% if day.vacations %}
             {% for vacation in day.vacations %}
               <span class="badge vacation">{{ vacation.name }}</span>
@@ -19,8 +35,8 @@
               <div><span class="badge exam">{{ exam.subject }}</span> {{ exam.title }}</div>
             {% endfor %}
           {% endif %}
-          {% if day.tasks %}
-            <p>{{ day.tasks|length }} Lerneinheit(en)</p>
+          {% if day.task_count %}
+            <p>{{ day.done_task_count }} / {{ day.task_count }} Lerneinheit(en) erledigt</p>
           {% endif %}
         </div>
       {% endfor %}

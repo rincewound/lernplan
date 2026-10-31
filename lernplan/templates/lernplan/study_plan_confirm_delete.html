@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Lerneinheit löschen{% endblock %}
+
+{% block content %}
+  <section class="panel">
+    <h1>Lerneinheit löschen</h1>
+    <p>
+      Soll „{{ plan.subject }}“ wirklich gelöscht werden? Bereits vergangene
+      Lerneinheiten bleiben im Kalender erhalten. Zukünftige Aufgaben dieser
+      Lerneinheit werden entfernt.
+    </p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit">Löschen bestätigen</button>
+      <a href="{% url 'study_plans' %}">Abbrechen</a>
+    </form>
+  </section>
+{% endblock %}
