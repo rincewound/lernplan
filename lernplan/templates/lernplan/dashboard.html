@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Mein Lernplan{% endblock %}
+
+{% block content %}
+  <section class="panel">
+    <h1>{{ target_user.username }} – heutiger Tag</h1>
+
+    {% if visible_users.count > 1 %}
+      <form method="get">
+        {{ user_select_form.as_p }}
+        <button type="submit">Benutzer laden</button>
+      </form>
+    {% endif %}
+  </section>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Offene Lerneinheiten</h2>
+      {% if open_tasks %}
+        <ul class="task-list">
+          {% for task in open_tasks %}
+            <li class="task-item">
+              <div>
+                <strong>{{ task.subject }}</strong><br />
+                {{ task.title }}
+              </div>
+              <div class="actions">
+                <span class="badge plan">{{ task.minutes }} min</span>
+                <a href="{% url 'toggle_task' task.pk %}">
+                  <button type="button">Erledigt</button>
+                </a>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>Für heute sind keine offenen Lerneinheiten mehr vorhanden.</p>
+      {% endif %}
+    </section>
+
+    <section class="panel">
+      <h2>Erledigt</h2>
+      {% if done_tasks %}
+        <ul class="task-list">
+          {% for task in done_tasks %}
+            <li class="task-item done">
+              <div>
+                <strong>{{ task.subject }}</strong><br />
+                {{ task.title }}
+              </div>
+              <div class="actions">
+                <span class="badge plan">{{ task.minutes }} min</span>
+                <a href="{% url 'toggle_task' task.pk %}">
+                  <button type="button" class="secondary">Zurücksetzen</button>
+                </a>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>Es gibt noch keine erledigten Einheiten.</p>
+      {% endif %}
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2>Kommende Prüfungen (nächste 3 Wochen)</h2>
+    {% if upcoming_exams %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Datum</th>
+            <th>Fach</th>
+            <th>Prüfung</th>
+            <th>Minuten</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for exam in upcoming_exams %}
+            <tr>
+              <td>{{ exam.exam_date }}</td>
+              <td>{{ exam.subject }}</td>
+              <td>{{ exam.title }}</td>
+              <td>{{ exam.duration_minutes }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>Keine bevorstehenden Prüfungen.</p>
+    {% endif %}
+  </section>
+{% endblock %}

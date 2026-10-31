@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Kalender{% endblock %}
+
+{% block content %}
+  <section class="panel">
+    <h1>Kalender</h1>
+    <div class="grid">
+      {% for day in days %}
+        <div class="day-card {% if day.vacations %}holiday{% endif %} {% if day.exams %}exam-day{% endif %}">
+          <h3><a href="{% url 'day_detail' day.date.isoformat %}">{{ day.date|date:'D, d. M Y' }}</a></h3>
+          {% if day.vacations %}
+            {% for vacation in day.vacations %}
+              <span class="badge vacation">{{ vacation.name }}</span>
+            {% endfor %}
+          {% endif %}
+          {% if day.exams %}
+            {% for exam in day.exams %}
+              <div><span class="badge exam">{{ exam.subject }}</span> {{ exam.title }}</div>
+            {% endfor %}
+          {% endif %}
+          {% if day.tasks %}
+            <p>{{ day.tasks|length }} Lerneinheit(en)</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

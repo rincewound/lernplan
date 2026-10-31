@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Tagesansicht{% endblock %}
+
+{% block content %}
+  <section class="panel">
+    <h1>{{ selected_date }}</h1>
+
+    {% if vacations %}
+      <h2>Ferien</h2>
+      {% for vacation in vacations %}
+        <span class="badge vacation">{{ vacation.name }}</span>
+      {% endfor %}
+    {% endif %}
+
+    <h2>Prüfungen</h2>
+    {% if exams %}
+      <ul class="task-list">
+        {% for exam in exams %}
+          <li class="task-item">
+            <div>
+              <strong>{{ exam.subject }}</strong><br />
+              {{ exam.title }}
+            </div>
+            <div class="actions">
+              <span class="badge exam">{{ exam.duration_minutes }} min</span>
+              <a href="{% url 'edit_exam' exam.pk %}"><button type="button" class="secondary">Bearbeiten</button></a>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Für diesen Tag sind keine Prüfungen geplant.</p>
+    {% endif %}
+
+    <h2>Lerneinheiten</h2>
+    {% if tasks %}
+      <ul class="task-list">
+        {% for task in tasks %}
+          <li class="task-item {% if task.done %}done{% endif %}">
+            <div>
+              <strong>{{ task.subject }}</strong><br />
+              {{ task.title }}
+            </div>
+            <div class="actions">
+              <span class="badge plan">{{ task.minutes }} min</span>
+              <a href="{% url 'toggle_task' task.pk %}"><button type="button" class="secondary">{% if task.done %}Zurücksetzen{% else %}Erledigt{% endif %}</button></a>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Für diesen Tag sind keine Lerneinheiten geplant.</p>
+    {% endif %}
+  </section>
+{% endblock %}

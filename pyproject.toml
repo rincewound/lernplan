@@ -1,0 +1,20 @@
+[project]
+name = "lernplan"
+version = "0.1.0"
+description = "Personal learning plan app based on the lernplan specification"
+requires-python = ">=3.12"
+dependencies = [
+  "django>=5.0,<5.1",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["learning_plan", "lernplan"]
+
+[tool.ruff.lint.per-file-ignores]
+"lernplan/migrations/*.py" = ["E501"]
