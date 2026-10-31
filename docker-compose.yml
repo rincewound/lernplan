@@ -6,7 +6,7 @@ services:
       context: .
     container_name: lernplan-web
     ports:
-      - "8000:8000"
+      - "8081:8000"
     environment:
       DJANGO_SETTINGS_MODULE: learning_plan.settings
     volumes:
