@@ -26,9 +26,10 @@ class Command(BaseCommand):
             admin_user.save()
         admin_user.groups.set([admin_group, supervisor_group, user_group])
 
-        user, _ = User.objects.get_or_create(username="learner")
-        user.set_password("learner123")
-        user.save()
+        user, created = User.objects.get_or_create(username="learner")
+        if created:
+            user.set_password("learner123")
+            user.save()
         user.groups.add(user_group)
 
         StudyPlan.objects.update_or_create(

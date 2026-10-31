@@ -1,6 +1,7 @@
 from datetime import date
 
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
 from django.test import TestCase
 
 from .models import Exam, LearningTask, StudyPlan, Vacation, ensure_tasks_for_user
@@ -40,6 +41,14 @@ class LernplanModelTests(TestCase):
 
         self.assertRedirects(response, "/login/")
         self.assertNotIn("_auth_user_id", self.client.session)
+
+    def test_seed_demo_data_does_not_reset_existing_learner_password(self):
+        learner = User.objects.create_user(username="learner", password="user-chosen-password")
+
+        call_command("seed_demo_data", stdout=None)
+
+        learner.refresh_from_db()
+        self.assertTrue(learner.check_password("user-chosen-password"))
 
     def test_daily_plan_generates_weekday_tasks(self):
         start_date = date(2026, 1, 5)
