@@ -3,7 +3,7 @@
 {% block title %}Mein Lernplan{% endblock %}
 
 {% block content %}
-  <section class="panel">
+  <section class="panel dashboard-intro">
     <h1>{{ target_user.username }} – heutiger Tag</h1>
 
     {% if visible_users.count > 1 %}
@@ -15,8 +15,9 @@
   </section>
 
   <div class="grid">
-    <section class="panel">
+    <section class="panel task-panel task-panel-open">
       <h2>Offene Lerneinheiten</h2>
+      <p class="motivation">{{ motivation.open }}</p>
       {% if open_tasks %}
         <ul class="task-list">
           {% for task in open_tasks %}
@@ -31,7 +32,7 @@
               </div>
               <div class="actions">
                 <span class="badge plan">{{ task.minutes }} min</span>
-                <a href="{% url 'toggle_task' task.pk %}">Erledigt</a>
+                <a class="task-toggle" href="{% url 'toggle_task' task.pk %}">Erledigt</a>
               </div>
             </li>
           {% endfor %}
@@ -41,8 +42,9 @@
       {% endif %}
     </section>
 
-    <section class="panel">
+    <section class="panel task-panel task-panel-done">
       <h2>Erledigt</h2>
+      <p class="motivation">{{ motivation.done }}</p>
       {% if done_tasks %}
         <ul class="task-list">
           {% for task in done_tasks %}
@@ -57,7 +59,7 @@
               </div>
               <div class="actions">
                 <span class="badge plan">{{ task.minutes }} min</span>
-                <a href="{% url 'toggle_task' task.pk %}">Zurücksetzen</a>
+                <a class="task-toggle" href="{% url 'toggle_task' task.pk %}">Zurücksetzen</a>
               </div>
             </li>
           {% endfor %}

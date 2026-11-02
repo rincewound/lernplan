@@ -1,0 +1,22 @@
+body[data-theme="forest"] {
+  --page-bg: #0c1112;
+  --page-text: #f0e5cc;
+  --topbar-text: #f0e5cc;
+  --panel-bg: #1c1c18;
+  --task-bg: #24231e;
+  --border: #756044;
+  --link-bg: #30291f;
+  --link-text: #f5e9d0;
+  --link-hover: #463827;
+  --field-bg: #171b19;
+  --field-text: #f0e5cc;
+  --skin-gold: #edcc8f;
+  --skin-muted: #c3b9a2;
+  --skin-danger: #f0a18d;
+  --skin-backdrop: url("forest/backdrop.jpg");
+  --skin-surface: url("forest/surface.jpg");
+  --skin-frame: url("forest/frame.png");
+  --skin-inset: url("forest/inset.png");
+  --skin-control: url("forest/control.png");
+  --skin-emblem: url("forest/emblem.png");
+}

@@ -80,6 +80,30 @@ body[data-theme="forest"] {
   font-weight: bold;
 }
 
+.motivation {
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--task-bg);
+  color: var(--page-text);
+  line-height: 1.5;
+}
+
+.motivation-top {
+  flex-basis: 100%;
+  margin: 0;
+  text-align: center;
+}
+
+.topbar:has(.motivation-top) {
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.topbar > .motivation-top {
+  order: 1;
+}
+
 .nav {
   display: flex;
   flex-wrap: wrap;

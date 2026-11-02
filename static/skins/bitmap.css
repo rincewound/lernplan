@@ -1,0 +1,290 @@
+/* Keep skin stylesheets alongside this file so image tokens share a URL base. */
+body[data-skin="bitmap"] {
+  color-scheme: dark;
+  min-height: 100vh;
+  background-color: var(--page-bg);
+  background-image: var(--skin-backdrop);
+  background-position: center top;
+  background-size: max(100%, 900px) auto;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+[data-skin="bitmap"] :is(.topbar, .panel),
+[data-skin="bitmap"] .messages li {
+  border: 24px solid var(--border);
+  border-image: var(--skin-frame) 38 / 24px / 0 stretch;
+  border-radius: 0;
+  background: var(--panel-bg) var(--skin-surface) repeat;
+  background-clip: padding-box;
+  box-shadow: 0 8px 24px #000b, inset 0 0 35px #0009;
+}
+
+[data-skin="bitmap"] .topbar {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  max-width: 1100px;
+  margin: 190px auto 24px;
+  padding: 18px 22px 14px;
+}
+
+[data-skin="bitmap"] .brand {
+  margin: 0 0 24px;
+  padding: 0 0 20px;
+  border-bottom: 1px solid var(--border);
+  color: var(--skin-gold);
+  font-family: "Old English Text MT", "Palatino Linotype", Georgia, serif;
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  font-weight: bold;
+  line-height: 1.15;
+  text-align: center;
+  text-shadow: 0 3px 2px #000, 0 0 18px #b2733838;
+}
+
+[data-skin="bitmap"] .brand::before {
+  content: "";
+  position: absolute;
+  top: -62px;
+  left: calc(50% - 45px);
+  width: 90px;
+  height: 90px;
+  background: var(--skin-emblem) center / contain no-repeat;
+}
+
+[data-skin="bitmap"] .nav {
+  gap: 14px;
+}
+
+[data-skin="bitmap"] :where(.nav-link, main a, button, .nav-logout) {
+  box-sizing: border-box;
+  min-height: 46px;
+  padding: 6px 16px;
+  border: 12px solid var(--border);
+  border-image: var(--skin-control) 16 / 12px / 0 stretch;
+  border-radius: 0;
+  background: var(--link-bg) var(--skin-surface) repeat;
+  background-clip: padding-box;
+  color: var(--link-text);
+  font-weight: bold;
+  line-height: 1.25;
+  text-align: center;
+  text-decoration: none;
+  text-shadow: 0 2px 2px #000;
+  box-shadow: 0 3px 6px #0008;
+  transition: filter 120ms ease, transform 120ms ease;
+}
+
+[data-skin="bitmap"] :is(.nav-link, main a, button):hover {
+  background-color: var(--link-hover);
+  filter: brightness(1.2);
+  transform: translateY(-1px);
+}
+
+[data-skin="bitmap"] :is(.nav-link, main a, button):active {
+  transform: translateY(1px);
+}
+
+[data-skin="bitmap"] :is(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid var(--skin-gold);
+  outline-offset: 3px;
+}
+
+[data-skin="bitmap"] .nav-logout {
+  color: var(--skin-danger);
+}
+
+[data-skin="bitmap"] .theme-form {
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-left: auto;
+}
+
+[data-skin="bitmap"] .theme-form label {
+  color: var(--skin-gold);
+  font-family: Georgia, serif;
+  font-weight: bold;
+}
+
+[data-skin="bitmap"] .container {
+  box-sizing: border-box;
+  margin-top: 0;
+  padding: 0;
+}
+
+[data-skin="bitmap"] .panel {
+  min-width: 0;
+  padding: 8px 18px 18px;
+  margin-bottom: 22px;
+  overflow-x: auto;
+}
+
+[data-skin="bitmap"] :is(h1, h2, h3) {
+  color: var(--skin-gold);
+  font-family: "Palatino Linotype", Georgia, serif;
+  font-weight: normal;
+  line-height: 1.25;
+  text-shadow: 0 2px 3px #000;
+}
+
+[data-skin="bitmap"] :is(h1, h2) {
+  margin: 0 0 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+}
+
+[data-skin="bitmap"] .task-item {
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px;
+  border: 16px solid var(--border);
+  border-image: var(--skin-inset) 30 / 16px / 0 stretch;
+  border-radius: 0;
+  background: var(--task-bg) var(--skin-surface) repeat;
+  background-clip: padding-box;
+  box-shadow: inset 0 0 30px #0008;
+}
+
+[data-skin="bitmap"] .task-item > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+[data-skin="bitmap"] .task-item .actions {
+  margin-left: auto;
+  justify-content: flex-end;
+}
+
+[data-skin="bitmap"] .task-item.done {
+  opacity: 1;
+  text-decoration: none;
+}
+
+[data-skin="bitmap"] .task-item.done > :first-child {
+  color: var(--skin-muted);
+}
+
+[data-skin="bitmap"] .badge {
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 2px #ffffff12, 0 2px 4px #0008;
+  white-space: normal;
+}
+
+[data-skin="bitmap"] .badge.plan {
+  background: #27353b;
+  color: #d3e4eb;
+}
+
+[data-skin="bitmap"] .badge.exam {
+  background: #452b28;
+  color: #ffd1bf;
+}
+
+[data-skin="bitmap"] .badge.vacation {
+  background: #283c2d;
+  color: #d9e8bd;
+}
+
+[data-skin="bitmap"] :is(input, select, textarea) {
+  border: 2px solid var(--border);
+  border-radius: 3px;
+  box-shadow: inset 0 2px 8px #0008;
+}
+
+[data-skin="bitmap"] :is(input[type="checkbox"], input[type="radio"]) {
+  width: auto;
+  accent-color: var(--skin-gold);
+}
+
+[data-skin="bitmap"] .day-card {
+  background: var(--task-bg);
+  border-color: var(--border);
+  border-radius: 2px;
+}
+
+[data-skin="bitmap"] .day-card.holiday {
+  background: #24352b;
+}
+
+[data-skin="bitmap"] .day-card.exam-day {
+  background: #3c2926;
+}
+
+[data-skin="bitmap"] .messages li {
+  padding: 12px 18px;
+  color: var(--skin-gold);
+}
+
+[data-skin="bitmap"] .messages .error,
+[data-skin="bitmap"] .errorlist {
+  color: var(--skin-danger);
+}
+
+[data-skin="bitmap"] .messages .success::before {
+  content: "\2726";
+  margin-right: 12px;
+}
+
+[data-skin="bitmap"] .table th {
+  color: var(--skin-gold);
+}
+
+@media (max-width: 1150px) {
+  [data-skin="bitmap"] :is(.topbar, .container) {
+    width: calc(100% - 32px);
+  }
+}
+
+@media (max-width: 760px) {
+  [data-skin="bitmap"] .topbar {
+    margin-top: 155px;
+    padding: 18px 8px 8px;
+  }
+
+  [data-skin="bitmap"] .nav {
+    gap: 10px;
+  }
+
+  [data-skin="bitmap"] .nav-link {
+    flex: 1 1 auto;
+    padding-inline: 8px;
+  }
+
+  [data-skin="bitmap"] .theme-form {
+    flex: 1 1 100%;
+    margin: 8px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  [data-skin="bitmap"] .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  [data-skin="bitmap"] .panel {
+    padding: 8px;
+    border-width: 18px;
+    border-image-width: 18px;
+  }
+
+  [data-skin="bitmap"] .task-item {
+    padding: 10px;
+  }
+
+  [data-skin="bitmap"] .forms-row {
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-skin="bitmap"] :is(.nav-link, main a, button),
+  [data-skin="bitmap"] :is(.nav-link, main a, button):is(:hover, :active) {
+    transition: none;
+    transform: none;
+  }
+}

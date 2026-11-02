@@ -5,6 +5,7 @@ from django.core.management import call_command
 from django.test import TestCase
 
 from .models import Exam, LearningTask, StudyPlan, UserPreference, Vacation, ensure_tasks_for_user
+from .motivation import SENTENCES
 
 User = get_user_model()
 
@@ -129,6 +130,41 @@ class LernplanModelTests(TestCase):
         self.assertRedirects(response, "/my/")
         self.assertFalse(UserPreference.objects.filter(user=self.user).exists())
 
+    def test_forest_bitmap_skin_persists_and_renders_across_pages(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post("/theme/", {"theme": "forest", "next": "/my/"}, follow=True)
+
+        self.assertContains(response, "Theme gespeichert.")
+        self.assertEqual(UserPreference.objects.get(user=self.user).theme, "forest")
+        for path in (
+            "/my/",
+            "/calendar/",
+            f"/day/{date.today().isoformat()}/",
+            "/plans/",
+            "/plans/new/",
+            "/exams/",
+            "/exams/new/",
+            "/vacations/",
+            "/vacations/new/",
+        ):
+            with self.subTest(path=path):
+                page = self.client.get(path)
+                self.assertContains(page, 'data-theme="forest" data-skin="bitmap"')
+                self.assertContains(page, "/static/skins/bitmap.css")
+                self.assertContains(page, "/static/skins/forest.css")
+
+    def test_switching_from_bitmap_skin_does_not_affect_other_themes(self):
+        self.client.force_login(self.user)
+        UserPreference.objects.create(user=self.user, theme="forest")
+
+        for theme in ("standard", "space", "unicorn"):
+            with self.subTest(theme=theme):
+                page = self.client.post("/theme/", {"theme": theme, "next": "/my/"}, follow=True)
+                self.assertContains(page, f'<body data-theme="{theme}">')
+                self.assertNotContains(page, "skins/bitmap.css")
+                self.assertNotContains(page, "skins/forest.css")
+
     def test_themes_are_isolated_per_user(self):
         second_user = User.objects.create_user(username="bob")
         UserPreference.objects.create(user=self.user, theme="forest")
@@ -137,6 +173,65 @@ class LernplanModelTests(TestCase):
         response = self.client.get("/my/")
 
         self.assertContains(response, '<body data-theme="standard">')
+
+    def test_lotr_theme_persists_and_loads_its_own_artwork(self):
+        self.client.force_login(self.user)
+
+        page = self.client.post("/theme/", {"theme": "lotr", "next": "/my/"}, follow=True)
+
+        self.assertEqual(UserPreference.objects.get(user=self.user).theme, "lotr")
+        self.assertContains(page, 'data-theme="lotr" data-skin="bitmap"')
+        self.assertContains(page, "/static/skins/lotr.css")
+        self.assertNotContains(page, "/static/skins/forest.css")
+        self.assertContains(page, '<option value="lotr" selected>')
+        self.assertContains(page, "Theme gespeichert.")
+
+    def test_botw_theme_persists_and_loads_only_its_own_artwork(self):
+        self.client.force_login(self.user)
+
+        page = self.client.post("/theme/", {"theme": "botw", "next": "/my/"}, follow=True)
+
+        self.assertEqual(UserPreference.objects.get(user=self.user).theme, "botw")
+        self.assertContains(page, 'data-theme="botw" data-skin="bitmap"')
+        self.assertContains(page, "/static/skins/bitmap.css")
+        self.assertContains(page, "/static/skins/botw.css")
+        self.assertNotContains(page, "/static/skins/lotr.css")
+        self.assertNotContains(page, "/static/skins/forest.css")
+        self.assertContains(page, '<option value="botw" selected>')
+        self.assertContains(page, "Theme gespeichert.")
+
+    def test_motivations_change_on_reload_for_every_theme(self):
+        self.client.force_login(self.user)
+        self.assertEqual(len(set(SENTENCES)), 50)
+
+        previous = set()
+        for theme, _label in UserPreference.THEME_CHOICES:
+            UserPreference.objects.update_or_create(user=self.user, defaults={"theme": theme})
+            for _reload in range(3):
+                page = self.client.get("/my/")
+                motivations = page.context["motivation"]
+                current = set(motivations.values())
+                self.assertEqual(len(current), 3)
+                self.assertTrue(current.issubset(SENTENCES))
+                self.assertTrue(current.isdisjoint(previous))
+                for sentence in current:
+                    self.assertContains(page, sentence, count=1)
+                previous = current
+
+    def test_motivations_rotate_on_other_pages_and_skip_anonymous_login(self):
+        login_page = self.client.get("/login/")
+        self.assertNotContains(login_page, 'class="motivation')
+        self.assertNotIn("motivation_indices", self.client.session)
+        self.client.force_login(self.user)
+        dashboard = self.client.get("/my/")
+
+        calendar = self.client.get("/calendar/")
+
+        self.assertContains(calendar, calendar.context["motivation"]["top"])
+        self.assertNotEqual(
+            dashboard.context["motivation"]["top"], calendar.context["motivation"]["top"]
+        )
+        self.assertNotContains(calendar, calendar.context["motivation"]["open"])
 
     def test_seed_demo_data_preserves_existing_vacation_assignments(self):
         learner = User.objects.create_user(username="learner")

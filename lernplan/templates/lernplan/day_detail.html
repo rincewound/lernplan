@@ -48,7 +48,7 @@
             </div>
             <div class="actions">
               <span class="badge plan">{{ task.minutes }} min</span>
-              <a href="{% url 'toggle_task' task.pk %}">{% if task.done %}Zurücksetzen{% else %}Erledigt{% endif %}</a>
+              <a class="task-toggle" href="{% url 'toggle_task' task.pk %}">{% if task.done %}Zurücksetzen{% else %}Erledigt{% endif %}</a>
             </div>
           </li>
         {% endfor %}

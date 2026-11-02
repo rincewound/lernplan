@@ -6,10 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Lernplan{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    {% if skin_stylesheet %}
+      <link rel="stylesheet" href="{% static 'skins/bitmap.css' %}" />
+      <link rel="stylesheet" href="{% static skin_stylesheet %}" />
+    {% endif %}
   </head>
-  <body data-theme="{{ current_theme }}">
+  <body data-theme="{{ current_theme }}"{% if skin_stylesheet %} data-skin="bitmap"{% endif %}>
     <header class="topbar">
-      <div class="brand">Lernplan</div>
+      <div class="brand"><span>Lernplan</span></div>
+      {% if motivation %}
+        <p class="motivation motivation-top">{{ motivation.top }}</p>
+      {% endif %}
       <nav class="nav">
         {% if user.is_authenticated %}
           <a class="nav-link" href="{% url 'my' %}">Mein Bereich</a>

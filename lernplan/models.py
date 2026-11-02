@@ -176,6 +176,8 @@ class UserPreference(models.Model):
         ("space", "Space"),
         ("unicorn", "Einhorn"),
         ("forest", "Wald"),
+        ("lotr", "lotr"),
+        ("botw", "botw"),
     ]
 
     user = models.OneToOneField(
