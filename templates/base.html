@@ -6,12 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Lernplan{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-    {% if skin_stylesheet %}
-      <link rel="stylesheet" href="{% static 'skins/bitmap.css' %}" />
-      <link rel="stylesheet" href="{% static skin_stylesheet %}" />
-    {% endif %}
+    {% for stylesheet in theme_stylesheets %}
+      <link rel="stylesheet" href="{% static stylesheet %}" />
+    {% endfor %}
   </head>
-  <body data-theme="{{ current_theme }}"{% if skin_stylesheet %} data-skin="bitmap"{% endif %}>
+  <body data-theme="{{ current_theme }}"{% if theme_is_bitmap %} data-skin="bitmap"{% endif %}>
     <header class="topbar">
       <div class="brand"><span>Lernplan</span></div>
       {% if motivation %}

@@ -1,3 +1,5 @@
+/* Base layout plus the default ("Standard") tokens. Themes live in static/skins/
+   and restyle the app by overriding these tokens on body[data-theme="..."]. */
 body {
   --page-bg: #f3f7fb;
   --page-text: #1a2a3d;
@@ -12,58 +14,25 @@ body {
   --field-bg: #ffffff;
   --field-text: #1a2a3d;
   --shadow: rgba(0, 0, 0, 0.08);
+  --focus: #f2c94c;
+  --badge-plan-bg: #e8f0ff;
+  --badge-plan-text: #214d9b;
+  --badge-exam-bg: #ffe2e2;
+  --badge-exam-text: #9e2c2c;
+  --badge-vacation-bg: #dff7e8;
+  --badge-vacation-text: #1e7b4c;
+  --day-bg: var(--panel-bg);
+  --day-holiday-bg: #ebfaef;
+  --day-holiday-text: var(--page-text);
+  --day-exam-bg: #fff3f3;
+  --success-bg: #e9f9ee;
+  --success-text: #1c6e42;
+  --error-bg: #ffe9ea;
+  --error-text: #85222a;
   margin: 0;
   font-family: Arial, sans-serif;
   background: var(--page-bg);
   color: var(--page-text);
-}
-
-body[data-theme="space"] {
-  --page-bg: #10172a;
-  --page-text: #e8ecff;
-  --topbar-bg: #080d1b;
-  --panel-bg: #1a2540;
-  --task-bg: #202d4d;
-  --border: #364568;
-  --link-bg: #6858ce;
-  --link-hover: #8578ec;
-  --field-bg: #111a30;
-  --field-text: #e8ecff;
-  --shadow: rgba(0, 0, 0, 0.3);
-  background-image: radial-gradient(ellipse at top, #24345d, var(--page-bg) 65%);
-  background-attachment: fixed;
-}
-
-body[data-theme="unicorn"] {
-  --page-bg: #fff0fb;
-  --page-text: #44254e;
-  --topbar-bg: #713e83;
-  --panel-bg: #fffaff;
-  --task-bg: #fff4fc;
-  --border: #f0cce9;
-  --link-bg: #cf4e9e;
-  --link-hover: #ad367f;
-  --field-bg: #ffffff;
-  --field-text: #44254e;
-  --shadow: rgba(113, 62, 131, 0.14);
-  background-image: linear-gradient(135deg, #fff0fb, #eff4ff 55%, #f8fff0);
-  background-attachment: fixed;
-}
-
-body[data-theme="forest"] {
-  --page-bg: #edf5ec;
-  --page-text: #1e392c;
-  --topbar-bg: #214b36;
-  --panel-bg: #fbfff9;
-  --task-bg: #f3faf0;
-  --border: #c9ddc7;
-  --link-bg: #347b4a;
-  --link-hover: #275f39;
-  --field-bg: #ffffff;
-  --field-text: #1e392c;
-  --shadow: rgba(31, 74, 51, 0.12);
-  background-image: linear-gradient(150deg, #edf5ec, #e0eee1 55%, #f5f7e9);
-  background-attachment: fixed;
 }
 
 .topbar {
@@ -124,14 +93,14 @@ body[data-theme="forest"] {
   transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
-.nav-link:hover, main a:hover {
-  background: var(--link-hover);
+.nav-link:hover, main a:hover, button:hover {
+  background-color: var(--link-hover);
   transform: translateY(-1px);
 }
 
-.nav-link:focus-visible, main a:focus-visible, button:focus-visible {
-  outline: 3px solid #f2c94c;
-  outline-offset: 2px;
+:is(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
 }
 
 .nav .nav-link {
@@ -166,6 +135,12 @@ body[data-theme="forest"] {
   color: var(--topbar-text);
 }
 
+.nav-logout:hover {
+  background: none;
+  text-decoration: underline;
+  transform: none;
+}
+
 .container {
   max-width: 1100px;
   margin: 1.5rem auto;
@@ -173,6 +148,8 @@ body[data-theme="forest"] {
 }
 
 .panel {
+  min-width: 0;
+  overflow-x: auto;
   background: var(--panel-bg);
   border-radius: 12px;
   padding: 1.25rem;
@@ -216,9 +193,9 @@ body[data-theme="forest"] {
   font-weight: bold;
 }
 
-.badge.exam { background: #ffe2e2; color: #9e2c2c; }
-.badge.vacation { background: #dff7e8; color: #1e7b4c; }
-.badge.plan { background: #e8f0ff; color: #214d9b; }
+.badge.exam { background: var(--badge-exam-bg); color: var(--badge-exam-text); }
+.badge.vacation { background: var(--badge-vacation-bg); color: var(--badge-vacation-text); }
+.badge.plan { background: var(--badge-plan-bg); color: var(--badge-plan-text); }
 
 .table {
   width: 100%;
@@ -231,19 +208,37 @@ body[data-theme="forest"] {
   text-align: left;
 }
 
+/* Users who can see others get a "load user" form above the page content. */
+.panel > form[method="get"] {
+  margin-bottom: 1.25rem;
+}
+
+.panel > form[method="get"]:last-child {
+  margin-bottom: 0;
+}
+
+.calendar-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
 .day-card {
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 0.8rem;
-  background: var(--panel-bg);
+  background: var(--day-bg);
 }
 
 .day-card.holiday {
-  background: #ebfaef;
+  background: var(--day-holiday-bg);
+  color: var(--day-holiday-text);
 }
 
 .day-card.exam-day {
-  background: #fff3f3;
+  background: var(--day-exam-bg);
 }
 
 button, input, select, textarea {
@@ -252,7 +247,7 @@ button, input, select, textarea {
 
 button {
   background: var(--link-bg);
-  color: white;
+  color: var(--link-text);
   border: none;
   border-radius: 8px;
   padding: 0.6rem 1rem;
@@ -304,8 +299,8 @@ form p {
   margin-bottom: 0.5rem;
 }
 
-.messages .success { background: #e9f9ee; color: #1c6e42; }
-.messages .error { background: #ffe9ea; color: #85222a; }
+.messages .success { background: var(--success-bg); color: var(--success-text); }
+.messages .error { background: var(--error-bg); color: var(--error-text); }
 
 @media (max-width: 760px) {
   .topbar {

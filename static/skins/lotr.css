@@ -1,5 +1,4 @@
 body[data-theme="lotr"] {
-  color-scheme: light;
   --page-bg: #1d1513;
   --page-text: #352511;
   --topbar-text: #fff3d4;
@@ -11,6 +10,14 @@ body[data-theme="lotr"] {
   --link-hover: #b98930;
   --field-bg: #fff4d8;
   --field-text: #352511;
+  --focus: #b94214;
+  --badge-exam-bg: #edc1a7;
+  --badge-exam-text: #632719;
+  --badge-vacation-bg: #dbe1ba;
+  --badge-vacation-text: #31431b;
+  --day-holiday-bg: #dbe1ba;
+  --day-holiday-text: #31431b;
+  --day-exam-bg: #f0d2b7;
   --skin-gold: #6a4316;
   --skin-muted: #64503a;
   --skin-danger: #812c1a;
@@ -20,66 +27,33 @@ body[data-theme="lotr"] {
   --skin-inset: url("lotr/control.png");
   --skin-control: url("lotr/control.png");
   --skin-emblem: url("lotr/emblem.png");
-  background-size: max(100%, 1000px) auto;
-  background-position: center top;
-  background-attachment: scroll;
 }
 
 [data-theme="lotr"] .topbar {
   container-type: inline-size;
-  max-width: 1000px;
-  width: 100%;
-  margin: 0 auto;
   padding: 24px 3% 32px;
-  border: 0;
-  background: none;
-  box-shadow: none;
 }
 
 [data-theme="lotr"] .brand {
-  position: relative;
   aspect-ratio: 3.05;
   margin: 0;
-  padding: 0;
-  border: 0;
   background: url("lotr/header.png") center / contain no-repeat;
-  text-shadow: none;
   filter: drop-shadow(0 3px 2px #100a07);
-}
-
-[data-theme="lotr"] .brand > span {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-[data-theme="lotr"] .brand::before {
-  content: none;
 }
 
 [data-theme="lotr"] .motivation,
 [data-theme="lotr"] .messages li {
-  box-sizing: border-box;
-  border: solid transparent;
   border-width: 34px 65px 42px;
   border-image: url("lotr/scroll.png") 110 310 130 fill / 34px 65px 42px / 0 stretch;
-  border-radius: 0;
   padding: 4px 8px;
   margin: 0 0 12px;
-  background: none;
   color: #352511;
   font-size: clamp(0.9rem, 2.2vw, 1.25rem);
-  font-weight: bold;
-  line-height: 1.4;
-  text-align: center;
   text-shadow: 0 1px #fff1c8;
-  box-shadow: none;
   filter: drop-shadow(0 3px 3px #24140866);
 }
 
+/* Sits on the banner that is part of the header art. */
 [data-theme="lotr"] .motivation-top {
   position: absolute;
   top: calc(24px + 20cqw);
@@ -92,68 +66,34 @@ body[data-theme="lotr"] {
   border: 0;
   margin: 0;
   padding: 0;
-  background: none;
   font-size: clamp(0.6rem, 2cqw, 1.1rem);
   line-height: 1.15;
   filter: none;
 }
 
 [data-theme="lotr"] .nav {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
   align-items: center;
-  gap: 12px;
 }
 
 [data-theme="lotr"] .nav::before {
-  content: "";
-  grid-column: 1 / -1;
-  grid-row: 2;
   height: clamp(150px, 30vw, 330px);
   pointer-events: none;
 }
 
-[data-theme="lotr"] .nav-link {
-  grid-column: span 2;
-}
-
-[data-theme="lotr"] .nav-link:nth-of-type(4) {
-  grid-column: 1 / span 2;
-}
-
-[data-theme="lotr"] .nav-link:nth-of-type(5) {
-  grid-column: span 3;
-}
-
 [data-theme="lotr"] :is(.nav-link, a, button),
 [data-theme="lotr"] .badge.plan {
-  box-sizing: border-box;
   min-height: 64px;
-  padding: 8px 12px;
-  border: solid transparent;
   border-width: 24px 36px;
   border-image: url("lotr/control.png") 90 140 fill / 24px 36px / 0 stretch;
-  border-radius: 0;
-  background: none;
   color: #352511;
-  font-weight: bold;
   font-size: clamp(0.85rem, 2vw, 1.2rem);
   text-shadow: 0 1px #ffeac0;
-  box-shadow: none;
   filter: drop-shadow(0 3px 3px #24140888);
 }
 
-[data-theme="lotr"] :is(.nav-link, main a, button):hover {
+[data-theme="lotr"] :is(.nav-link, a, button):hover {
   border-image-source: url("lotr/control-hover.png");
-  background: none;
   filter: drop-shadow(0 0 5px #fbc45488);
-}
-
-[data-theme="lotr"] .theme-form {
-  grid-column: 1 / span 4;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 0;
 }
 
 [data-theme="lotr"] .theme-form label {
@@ -162,16 +102,9 @@ body[data-theme="lotr"] {
 }
 
 [data-theme="lotr"] .theme-form select {
-  width: auto;
-  min-width: 5rem;
   border: 2px solid #bf9855;
   background: #e7c98e;
   border-radius: 12px;
-}
-
-[data-theme="lotr"] .nav > form:last-child {
-  grid-column: span 2;
-  justify-self: end;
 }
 
 [data-theme="lotr"] .nav-logout {
@@ -181,64 +114,28 @@ body[data-theme="lotr"] {
 }
 
 [data-theme="lotr"] .container {
-  max-width: 1000px;
-  width: 100%;
-  margin: 0 auto 32px;
-  padding: 0;
-  border: solid transparent;
   border-width: 110px 50px 110px;
   border-image: url("lotr/paper.png") 340 150 300 fill / 110px 50px 110px / 0 stretch;
-  background: none;
-}
-
-[data-theme="lotr"] .panel {
-  border: 0;
-  border-image: none;
-  padding: 20px 16px;
-  margin: 0;
-  background: none;
-  box-shadow: none;
-}
-
-[data-theme="lotr"] .container > .grid {
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0;
-}
-
-[data-theme="lotr"] .dashboard-intro {
-  padding-block: 0;
 }
 
 [data-theme="lotr"] .dashboard-intro h1 {
-  font: inherit;
-  font-size: 0.9rem;
-  padding: 0;
-  border: 0;
   text-shadow: none;
 }
 
 [data-theme="lotr"] :is(h1, h2, h3) {
   color: #5c3c19;
-  font-family: "Palatino Linotype", Georgia, serif;
   text-shadow: 0 1px #ffedc5;
 }
 
 [data-theme="lotr"] h2 {
-  border: 0;
-  padding: 0;
-  text-align: center;
   font-size: clamp(1.5rem, 4vw, 2.3rem);
   font-weight: bold;
 }
 
 [data-theme="lotr"] .task-panel > h2::before {
-  content: "";
-  display: inline-block;
   width: 48px;
   height: 50px;
-  margin-right: 8px;
-  background: url("lotr/unicorn.png") center / contain no-repeat;
-  vertical-align: middle;
+  background-image: url("lotr/unicorn.png");
 }
 
 [data-theme="lotr"] .task-panel-done > h2::before {
@@ -246,23 +143,11 @@ body[data-theme="lotr"] {
 }
 
 [data-theme="lotr"] .task-item {
-  flex-wrap: wrap;
-  gap: 16px;
-  padding: 20px 4px;
-  border: 0;
   border-bottom: 1px solid #98703d66;
-  background: none;
-  box-shadow: none;
 }
 
 [data-theme="lotr"] .task-item > :first-child {
-  flex: 1 1 100%;
   font-size: clamp(1rem, 2.8vw, 1.4rem);
-}
-
-[data-theme="lotr"] .task-item .actions {
-  width: 100%;
-  justify-content: space-between;
 }
 
 [data-theme="lotr"] .task-toggle {
@@ -277,34 +162,13 @@ body[data-theme="lotr"] {
 }
 
 [data-theme="lotr"] .badge.plan {
-  min-height: 0;
   border-width: 16px 24px;
   border-image-width: 16px 24px;
   padding: 0 4px;
-  white-space: nowrap;
-}
-
-[data-theme="lotr"] .badge.exam {
-  background: #edc1a7;
-  color: #632719;
-}
-
-[data-theme="lotr"] .badge.vacation,
-[data-theme="lotr"] .day-card.holiday {
-  background: #dbe1ba;
-  color: #31431b;
-}
-
-[data-theme="lotr"] .day-card.exam-day {
-  background: #f0d2b7;
 }
 
 [data-theme="lotr"] :is(input, select, textarea) {
   box-shadow: inset 0 2px 6px #79571b22;
-}
-
-[data-theme="lotr"] :is(a, button, input, select, textarea):focus-visible {
-  outline-color: #b94214;
 }
 
 @media (max-width: 760px) {
@@ -312,32 +176,11 @@ body[data-theme="lotr"] {
     padding: 16px 2% 20px;
   }
 
-  [data-theme="lotr"] .nav {
-    gap: 8px 4px;
-  }
-
   [data-theme="lotr"] .nav-link {
     border-width: 18px 12px;
     border-image-width: 18px 12px;
     padding: 4px 0;
     font-size: clamp(0.65rem, 2.6vw, 0.9rem);
-    overflow-wrap: anywhere;
-  }
-
-  [data-theme="lotr"] .theme-form {
-    padding: 0;
-    border: 0;
-    gap: 4px;
-  }
-
-  [data-theme="lotr"] .theme-form label,
-  [data-theme="lotr"] .theme-form select {
-    font-size: 0.75rem;
-  }
-
-  [data-theme="lotr"] .theme-form select {
-    min-width: 4rem;
-    padding: 4px;
   }
 
   [data-theme="lotr"] :is(.theme-submit, .nav-logout) {
@@ -350,10 +193,6 @@ body[data-theme="lotr"] {
   [data-theme="lotr"] .container {
     border-width: 70px 20px 70px;
     border-image-width: 70px 20px 70px;
-  }
-
-  [data-theme="lotr"] .panel {
-    padding: 16px 6px;
   }
 
   [data-theme="lotr"] .motivation,

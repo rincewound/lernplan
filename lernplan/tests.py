@@ -1,11 +1,13 @@
 from datetime import date, timedelta
 
 from django.contrib.auth import get_user_model
+from django.contrib.staticfiles import finders
 from django.core.management import call_command
 from django.test import TestCase
 
 from .models import Exam, LearningTask, StudyPlan, UserPreference, Vacation, ensure_tasks_for_user
 from .motivation import SENTENCES
+from .themes import THEME_CHOICES, THEMES
 
 User = get_user_model()
 
@@ -164,6 +166,36 @@ class LernplanModelTests(TestCase):
                 self.assertContains(page, f'<body data-theme="{theme}">')
                 self.assertNotContains(page, "skins/bitmap.css")
                 self.assertNotContains(page, "skins/forest.css")
+
+    def test_every_theme_stylesheet_exists_and_is_loaded(self):
+        self.client.force_login(self.user)
+        self.assertEqual(UserPreference.THEME_CHOICES, THEME_CHOICES)
+
+        for key, theme in THEMES.items():
+            with self.subTest(theme=key):
+                UserPreference.objects.update_or_create(user=self.user, defaults={"theme": key})
+                page = self.client.get("/my/")
+                for stylesheet in theme.stylesheets:
+                    self.assertIsNotNone(finders.find(stylesheet))
+                    self.assertContains(page, f"/static/{stylesheet}")
+                skin_attribute = ' data-skin="bitmap"' if theme.is_bitmap else ""
+                self.assertContains(page, f'<body data-theme="{key}"{skin_attribute}>')
+
+    def test_unicorn_theme_uses_its_own_skin_and_emblem(self):
+        self.client.force_login(self.user)
+
+        page = self.client.post("/theme/", {"theme": "unicorn", "next": "/my/"}, follow=True)
+
+        self.assertContains(page, "/static/skins/unicorn.css")
+        self.assertIsNotNone(finders.find("skins/unicorn/emblem.png"))
+
+    def test_stale_stored_theme_falls_back_to_default(self):
+        self.client.force_login(self.user)
+        UserPreference.objects.create(user=self.user, theme="retired")
+
+        page = self.client.get("/my/")
+
+        self.assertContains(page, '<body data-theme="standard">')
 
     def test_themes_are_isolated_per_user(self):
         second_user = User.objects.create_user(username="bob")

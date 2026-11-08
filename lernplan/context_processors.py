@@ -1,22 +1,19 @@
 from .models import UserPreference
 from .motivation import choose_motivations
-
-BITMAP_SKINS = {
-    "forest": "skins/forest.css",
-    "lotr": "skins/lotr.css",
-    "botw": "skins/botw.css",
-}
+from .themes import DEFAULT_THEME, THEME_CHOICES, THEMES
 
 
 def user_theme(request):
-    theme = "standard"
+    key = DEFAULT_THEME
     if request.user.is_authenticated:
         preference = UserPreference.objects.filter(user=request.user).first()
-        if preference:
-            theme = preference.theme
+        if preference and preference.theme in THEMES:
+            key = preference.theme
+    theme = THEMES[key]
     return {
-        "current_theme": theme,
-        "theme_choices": UserPreference.THEME_CHOICES,
-        "skin_stylesheet": BITMAP_SKINS.get(theme),
+        "current_theme": key,
+        "theme_choices": THEME_CHOICES,
+        "theme_stylesheets": theme.stylesheets,
+        "theme_is_bitmap": theme.is_bitmap,
         "motivation": choose_motivations(request) if request.user.is_authenticated else None,
     }

@@ -1,5 +1,15 @@
 /* Keep skin stylesheets alongside this file so image tokens share a URL base. */
 body[data-skin="bitmap"] {
+  --focus: var(--skin-gold);
+  --badge-plan-bg: #27353b;
+  --badge-plan-text: #d3e4eb;
+  --badge-exam-bg: #452b28;
+  --badge-exam-text: #ffd1bf;
+  --badge-vacation-bg: #283c2d;
+  --badge-vacation-text: #d9e8bd;
+  --day-bg: var(--task-bg);
+  --day-holiday-bg: #24352b;
+  --day-exam-bg: #3c2926;
   color-scheme: dark;
   min-height: 100vh;
   background-color: var(--page-bg);
@@ -88,11 +98,6 @@ body[data-skin="bitmap"] {
   transform: translateY(1px);
 }
 
-[data-skin="bitmap"] :is(a, button, input, select, textarea):focus-visible {
-  outline: 3px solid var(--skin-gold);
-  outline-offset: 3px;
-}
-
 [data-skin="bitmap"] .nav-logout {
   color: var(--skin-danger);
 }
@@ -116,10 +121,8 @@ body[data-skin="bitmap"] {
 }
 
 [data-skin="bitmap"] .panel {
-  min-width: 0;
   padding: 8px 18px 18px;
   margin-bottom: 22px;
-  overflow-x: auto;
 }
 
 [data-skin="bitmap"] :is(h1, h2, h3) {
@@ -175,21 +178,6 @@ body[data-skin="bitmap"] {
   white-space: normal;
 }
 
-[data-skin="bitmap"] .badge.plan {
-  background: #27353b;
-  color: #d3e4eb;
-}
-
-[data-skin="bitmap"] .badge.exam {
-  background: #452b28;
-  color: #ffd1bf;
-}
-
-[data-skin="bitmap"] .badge.vacation {
-  background: #283c2d;
-  color: #d9e8bd;
-}
-
 [data-skin="bitmap"] :is(input, select, textarea) {
   border: 2px solid var(--border);
   border-radius: 3px;
@@ -202,17 +190,7 @@ body[data-skin="bitmap"] {
 }
 
 [data-skin="bitmap"] .day-card {
-  background: var(--task-bg);
-  border-color: var(--border);
   border-radius: 2px;
-}
-
-[data-skin="bitmap"] .day-card.holiday {
-  background: #24352b;
-}
-
-[data-skin="bitmap"] .day-card.exam-day {
-  background: #3c2926;
 }
 
 [data-skin="bitmap"] .messages li {

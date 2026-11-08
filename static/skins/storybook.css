@@ -1,0 +1,206 @@
+/* Shared layout for the illustrated skins (lotr, botw): a single centred column
+   over scenery art, with bitmap-framed controls and one big framed content area.
+   Loaded between bitmap.css and the skin's own file, which adds the art and colours. */
+body[data-skin="bitmap"] {
+  color-scheme: light;
+  background-size: max(100%, 1000px) auto;
+  background-attachment: scroll;
+}
+
+[data-skin="bitmap"] .topbar {
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+[data-skin="bitmap"] .brand {
+  position: relative;
+  padding: 0;
+  border: 0;
+  text-shadow: none;
+}
+
+/* The wordmark is part of the header art; keep the text for screen readers. */
+[data-skin="bitmap"] .brand > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+[data-skin="bitmap"] .brand::before {
+  content: none;
+}
+
+[data-skin="bitmap"] .motivation,
+[data-skin="bitmap"] .messages li {
+  box-sizing: border-box;
+  border: solid transparent;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  font-weight: bold;
+  line-height: 1.4;
+  text-align: center;
+}
+
+[data-skin="bitmap"] .nav {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+
+[data-skin="bitmap"] .nav::before {
+  content: "";
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+[data-skin="bitmap"] .nav-link {
+  grid-column: span 2;
+}
+
+[data-skin="bitmap"] .nav-link:nth-of-type(4) {
+  grid-column: 1 / span 2;
+}
+
+[data-skin="bitmap"] .nav-link:nth-of-type(5) {
+  grid-column: span 3;
+}
+
+[data-skin="bitmap"] :is(.nav-link, a, button),
+[data-skin="bitmap"] .badge.plan {
+  box-sizing: border-box;
+  padding: 8px 12px;
+  border: solid transparent;
+  border-radius: 0;
+  background: none;
+  font-weight: bold;
+  box-shadow: none;
+}
+
+[data-skin="bitmap"] :is(.nav-link, a, button):hover {
+  background: none;
+}
+
+[data-skin="bitmap"] .badge.plan {
+  min-height: 0;
+  white-space: nowrap;
+}
+
+[data-skin="bitmap"] .theme-form {
+  grid-column: 1 / span 4;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+}
+
+[data-skin="bitmap"] .theme-form select {
+  width: auto;
+  min-width: 5rem;
+}
+
+[data-skin="bitmap"] .nav > form:last-child {
+  grid-column: span 2;
+  justify-self: end;
+}
+
+[data-skin="bitmap"] .container {
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto 32px;
+  padding: 0;
+  border: solid transparent;
+  background: none;
+}
+
+[data-skin="bitmap"] .panel {
+  border: 0;
+  padding: 20px 16px;
+  margin: 0;
+  background: none;
+  box-shadow: none;
+}
+
+[data-skin="bitmap"] .container > .grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+
+[data-skin="bitmap"] .dashboard-intro {
+  padding-block: 0;
+}
+
+[data-skin="bitmap"] .dashboard-intro h1 {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0;
+  border: 0;
+}
+
+[data-skin="bitmap"] h2 {
+  border: 0;
+  padding: 0;
+  text-align: center;
+}
+
+[data-skin="bitmap"] .task-panel > h2::before {
+  content: "";
+  display: inline-block;
+  margin-right: 8px;
+  background: center / contain no-repeat;
+  vertical-align: middle;
+}
+
+[data-skin="bitmap"] .task-item {
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 20px 4px;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+[data-skin="bitmap"] .task-item > :first-child {
+  flex: 1 1 100%;
+}
+
+[data-skin="bitmap"] .task-item .actions {
+  width: 100%;
+  justify-content: space-between;
+}
+
+@media (max-width: 760px) {
+  [data-skin="bitmap"] .nav {
+    gap: 8px 4px;
+  }
+
+  [data-skin="bitmap"] .nav-link {
+    overflow-wrap: anywhere;
+  }
+
+  [data-skin="bitmap"] .theme-form {
+    padding: 0;
+    border: 0;
+    gap: 4px;
+  }
+
+  [data-skin="bitmap"] .theme-form label,
+  [data-skin="bitmap"] .theme-form select {
+    font-size: 0.75rem;
+  }
+
+  [data-skin="bitmap"] .theme-form select {
+    min-width: 4rem;
+    padding: 4px;
+  }
+
+  [data-skin="bitmap"] .panel {
+    padding: 16px 6px;
+  }
+}

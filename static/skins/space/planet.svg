@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+<defs>
+<radialGradient id="s" cx=".34" cy=".3" r=".8"><stop offset="0" stop-color="#ffb37a"/><stop offset=".42" stop-color="#b84fc4"/><stop offset=".78" stop-color="#3a2478"/><stop offset="1" stop-color="#120b33"/></radialGradient>
+<linearGradient id="r" x1="0" x2="1"><stop offset="0" stop-color="#5ee7ff" stop-opacity=".1"/><stop offset=".5" stop-color="#ffe2b8"/><stop offset="1" stop-color="#ff6ad5" stop-opacity=".15"/></linearGradient>
+<clipPath id="o"><circle cx="250" cy="250" r="130"/></clipPath>
+<clipPath id="front"><rect x="0" y="250" width="500" height="250"/></clipPath>
+</defs>
+<g transform="rotate(-20 250 250)">
+<ellipse cx="250" cy="250" rx="225" ry="52" fill="none" stroke="url(#r)" stroke-width="20" opacity=".65"/>
+<circle cx="250" cy="250" r="130" fill="url(#s)"/>
+<g clip-path="url(#o)" fill="#ffffff" opacity=".1"><rect x="100" y="185" width="300" height="16"/><rect x="100" y="228" width="300" height="9"/><rect x="100" y="272" width="300" height="22"/><rect x="100" y="326" width="300" height="10"/></g>
+<g clip-path="url(#front)"><ellipse cx="250" cy="250" rx="225" ry="52" fill="none" stroke="url(#r)" stroke-width="20"/></g>
+</g>
+</svg>

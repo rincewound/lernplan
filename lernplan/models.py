@@ -7,6 +7,8 @@ from django.db import models, transaction
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 
+from .themes import DEFAULT_THEME, THEME_CHOICES
+
 User = get_user_model()
 
 
@@ -171,21 +173,14 @@ class LearningTask(models.Model):
 
 
 class UserPreference(models.Model):
-    THEME_CHOICES = [
-        ("standard", "Standard"),
-        ("space", "Space"),
-        ("unicorn", "Einhorn"),
-        ("forest", "Wald"),
-        ("lotr", "lotr"),
-        ("botw", "botw"),
-    ]
+    THEME_CHOICES = THEME_CHOICES
 
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
         related_name="preferences",
     )
-    theme = models.CharField(max_length=20, choices=THEME_CHOICES, default="standard")
+    theme = models.CharField(max_length=20, choices=THEME_CHOICES, default=DEFAULT_THEME)
 
     def __str__(self) -> str:
         return f"{self.user}: {self.get_theme_display()}"
